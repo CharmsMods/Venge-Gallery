@@ -40,7 +40,7 @@ document.addEventListener('DOMContentLoaded', () => {
         let filesToLoad = [];
 
         if (category === 'all') {
-            // If 'all' tab is selected, collect files from all categories
+            // If 'all' tab is selected, collect all files from all categories
             for (const cat of Object.keys(mediaManifest)) {
                 if (mediaManifest[cat]) {
                     mediaManifest[cat].forEach(file => {
@@ -50,6 +50,19 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             // Shuffle the collected files for the "All" tab
             filesToLoad = shuffleArray(filesToLoad);
+        } else if (category === 'videos') {
+            // If 'videos' tab is selected, collect only video files from all categories
+            for (const cat of Object.keys(mediaManifest)) {
+                if (mediaManifest[cat]) {
+                    mediaManifest[cat].forEach(file => {
+                        const fileExtension = file.split('.').pop().toLowerCase();
+                        if (['mp4', 'webm', 'ogg'].includes(fileExtension)) {
+                            filesToLoad.push({ category: cat, fileName: file });
+                        }
+                    });
+                }
+            }
+            // No shuffle for 'videos' tab by default
         } else {
             // For specific categories, get files directly from the manifest
             if (mediaManifest[category]) {
@@ -60,7 +73,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         if (filesToLoad.length === 0) {
-            galleryContainer.innerHTML = `<p style="font-size: 1.5em; text-align: center; margin-top: 50px;">No content yet for ${category === 'all' ? 'any category' : category}.</p>`;
+            galleryContainer.innerHTML = `<p style="font-size: 1.5em; text-align: center; margin-top: 50px;">No content yet for ${category === 'all' ? 'any category' : (category === 'videos' ? 'videos' : category)}.</p>`;
             return;
         }
 
@@ -88,6 +101,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 item.addEventListener('mouseenter', () => video.play());
                 item.addEventListener('mouseleave', () => { video.pause(); video.currentTime = 0; });
                 item.appendChild(video);
+
+                // Add video icon
+                const videoIcon = document.createElement('div');
+                videoIcon.classList.add('video-icon');
+                videoIcon.innerHTML = '<i class="fas fa-play"></i>'; // Font Awesome play icon
+                item.appendChild(videoIcon);
+
             } else {
                 console.warn(`Unsupported file type for ${mediaItem.fileName}`);
                 const placeholder = document.createElement('div');
