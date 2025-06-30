@@ -53,9 +53,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // Shuffle the collected files for the "All" tab
             filesToLoad = shuffleArray(filesToLoad);
         } else if (category === 'videos') {
-             // This tab is now removed from HTML, but keep logic for robustness if re-added
-             // or if user wants to filter just videos from the simplified categories.
-             // If you want this removed completely, you can delete this 'else if' block.
+            // If 'videos' tab is selected, collect ONLY video files from all relevant categories
             for (const cat of allRelevantCategories) {
                 if (mediaManifest[cat]) {
                     mediaManifest[cat].forEach(file => {
@@ -66,6 +64,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     });
                 }
             }
+            // Videos tab will not be shuffled by default, order will be based on manifest and category iteration
         }
          else {
             // For specific categories (wins, losses, general)
@@ -99,11 +98,13 @@ document.addEventListener('DOMContentLoaded', () => {
             } else if (item.dataset.mediaType === 'video') {
                 const video = document.createElement('video');
                 video.src = item.dataset.fullPath;
-                video.muted = true; // Muted by default for preview
-                video.loop = true; // Loop for preview
-                // Play on hover
-                item.addEventListener('mouseenter', () => video.play());
-                item.addEventListener('mouseleave', () => { video.pause(); video.currentTime = 0; });
+                video.muted = true; // Still muted for preview
+                video.loop = true; // Still loops for preview
+
+                // --- REMOVED AUTOPLAY ON HOVER ---
+                // item.addEventListener('mouseenter', () => video.play());
+                // item.addEventListener('mouseleave', () => { video.pause(); video.currentTime = 0; });
+
                 item.appendChild(video);
 
                 // Add video icon
