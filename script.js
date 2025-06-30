@@ -38,10 +38,12 @@ document.addEventListener('DOMContentLoaded', () => {
         galleryContainer.innerHTML = ''; // Clear current gallery
 
         let filesToLoad = [];
+        // Define the categories to iterate for 'all' and 'videos' tabs
+        const allRelevantCategories = ['wins', 'losses', 'general'];
 
         if (category === 'all') {
-            // If 'all' tab is selected, collect all files from all categories
-            for (const cat of Object.keys(mediaManifest)) {
+            // If 'all' tab is selected, collect all files from relevant categories
+            for (const cat of allRelevantCategories) {
                 if (mediaManifest[cat]) {
                     mediaManifest[cat].forEach(file => {
                         filesToLoad.push({ category: cat, fileName: file });
@@ -51,8 +53,10 @@ document.addEventListener('DOMContentLoaded', () => {
             // Shuffle the collected files for the "All" tab
             filesToLoad = shuffleArray(filesToLoad);
         } else if (category === 'videos') {
-            // If 'videos' tab is selected, collect only video files from all categories
-            for (const cat of Object.keys(mediaManifest)) {
+             // This tab is now removed from HTML, but keep logic for robustness if re-added
+             // or if user wants to filter just videos from the simplified categories.
+             // If you want this removed completely, you can delete this 'else if' block.
+            for (const cat of allRelevantCategories) {
                 if (mediaManifest[cat]) {
                     mediaManifest[cat].forEach(file => {
                         const fileExtension = file.split('.').pop().toLowerCase();
@@ -62,9 +66,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     });
                 }
             }
-            // No shuffle for 'videos' tab by default
-        } else {
-            // For specific categories, get files directly from the manifest
+        }
+         else {
+            // For specific categories (wins, losses, general)
             if (mediaManifest[category]) {
                 mediaManifest[category].forEach(file => {
                     filesToLoad.push({ category: category, fileName: file });
@@ -73,7 +77,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         if (filesToLoad.length === 0) {
-            galleryContainer.innerHTML = `<p style="font-size: 1.5em; text-align: center; margin-top: 50px;">No content yet for ${category === 'all' ? 'any category' : (category === 'videos' ? 'videos' : category)}.</p>`;
+            galleryContainer.innerHTML = `<p style="font-size: 1.5em; text-align: center; margin-top: 50px;">No content yet for ${category === 'all' ? 'any category' : category}.</p>`;
             return;
         }
 
