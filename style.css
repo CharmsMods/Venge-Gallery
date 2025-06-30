@@ -67,11 +67,13 @@ h1 {
 
 .gallery-container {
     display: grid;
-    /* Cards will be approx. 350px wide, with generous spacing */
+    /* Cards will be approx. 320px wide, allow them to stretch but within max-width */
     grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
     gap: 25px; /* Ample space between cards */
     padding: 40px; /* Generous padding around the grid */
     justify-content: center; /* Center items in the grid */
+    max-width: 1600px; /* Limit the maximum width of the entire gallery container */
+    margin: 0 auto; /* Center the gallery container itself */
 }
 
 .gallery-item {
@@ -88,6 +90,8 @@ h1 {
     min-height: 200px; /* Minimum height for cards */
     aspect-ratio: 16/9; /* Maintain aspect ratio */
     position: relative; /* Needed for absolute positioning of video icon */
+    max-width: 500px; /* NEW: Limit individual card width */
+    margin: 0 auto; /* NEW: Center the item within its grid cell if it doesn't fill it */
 }
 
 .gallery-item:hover {
@@ -196,6 +200,30 @@ h1 {
     transform: rotate(90deg); /* Simple rotate effect */
 }
 
+/* Back to Top Button Styles */
+#backToTopBtn {
+    display: none; /* Hidden by default */
+    position: fixed; /* Fixed/sticky position */
+    bottom: 30px; /* Place the button at the bottom of the page */
+    right: 30px; /* Place the button 30px from the right */
+    z-index: 99; /* Make sure it does not overlap */
+    border: none; /* Remove borders */
+    outline: none; /* Remove outline */
+    background-color: #6A8EAE; /* Match active tab color */
+    color: white; /* Text color */
+    cursor: pointer; /* Add a mouse pointer on hover */
+    padding: 15px; /* Some padding */
+    border-radius: 50%; /* Rounded corners */
+    font-size: 18px; /* Increase font size */
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    transition: background-color 0.3s, opacity 0.3s;
+}
+
+#backToTopBtn:hover {
+    background-color: #557A95; /* Darker on hover */
+}
+
+
 /* Basic responsiveness */
 @media (max-width: 1024px) {
     h1 {
@@ -210,9 +238,11 @@ h1 {
         grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
         gap: 20px;
         padding: 30px;
+        max-width: 100%; /* No max-width on container for smaller screens */
     }
     .gallery-item {
         min-height: 180px;
+        max-width: none; /* Remove max-width on individual items for smaller screens */
     }
     .video-icon {
         width: 30px;
@@ -225,6 +255,12 @@ h1 {
         right: 25px;
         width: 45px;
         height: 45px;
+    }
+    #backToTopBtn {
+        bottom: 20px;
+        right: 20px;
+        padding: 12px;
+        font-size: 16px;
     }
 }
 
@@ -264,6 +300,12 @@ h1 {
         width: 40px;
         height: 40px;
     }
+    #backToTopBtn {
+        bottom: 15px;
+        right: 15px;
+        padding: 10px;
+        font-size: 14px;
+    }
 }
 
 @media (max-width: 480px) {
@@ -282,7 +324,7 @@ h1 {
     }
     .gallery-item {
         min-height: 180px;
-        max-width: 95%;
+        max-width: 95%; /* Adjust width to fit screen */
         margin: 0 auto;
     }
     .video-icon {

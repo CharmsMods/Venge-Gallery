@@ -4,8 +4,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const fullscreenModal = document.getElementById('fullscreen-modal');
     const modalContent = document.querySelector('.modal-content');
     const closeButton = document.querySelector('.close-button');
+    const backToTopBtn = document.getElementById("backToTopBtn"); // Get the back to top button
 
     let mediaManifest = {}; // Will store the fetched manifest
+    let currentMediaList = []; // Array of { category, fileName } objects currently displayed on the page
+    let currentFullscreenIndex = -1; // Index of the currently viewed item in currentMediaList
 
     // Function to shuffle an array (Fisher-Yates algorithm)
     const shuffleArray = (array) => {
@@ -37,7 +40,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const loadMedia = (category) => {
         galleryContainer.innerHTML = ''; // Clear current gallery
 
-        let filesToLoad = [];
+        let filesToProcess = []; // Temporary array to build the list before assigning to currentMediaList
         // Define the categories to iterate for 'all' and 'videos' tabs
         const allRelevantCategories = ['wins', 'losses', 'general'];
 
@@ -46,12 +49,12 @@ document.addEventListener('DOMContentLoaded', () => {
             for (const cat of allRelevantCategories) {
                 if (mediaManifest[cat]) {
                     mediaManifest[cat].forEach(file => {
-                        filesToLoad.push({ category: cat, fileName: file });
+                        filesToProcess.push({ category: cat, fileName: file });
                     });
                 }
             }
             // Shuffle the collected files for the "All" tab
-            filesToLoad = shuffleArray(filesToLoad);
+            filesToProcess = shuffleArray(filesToProcess);
         } else if (category === 'videos') {
             // If 'videos' tab is selected, collect ONLY video files from all relevant categories
             for (const cat of allRelevantCategories) {
@@ -59,7 +62,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     mediaManifest[cat].forEach(file => {
                         const fileExtension = file.split('.').pop().toLowerCase();
                         if (['mp4', 'webm', 'ogg'].includes(fileExtension)) {
-                            filesToLoad.push({ category: cat, fileName: file });
+                            filesToProcess.push({ category: cat, fileName: file });
                         }
                     });
                 }
@@ -70,17 +73,20 @@ document.addEventListener('DOMContentLoaded', () => {
             // For specific categories (wins, losses, general)
             if (mediaManifest[category]) {
                 mediaManifest[category].forEach(file => {
-                    filesToLoad.push({ category: category, fileName: file });
+                    filesToProcess.push({ category: category, fileName: file });
                 });
             }
         }
 
-        if (filesToLoad.length === 0) {
+        // Assign the final processed list to currentMediaList for fullscreen navigation
+        currentMediaList = filesToProcess;
+
+        if (currentMediaList.length === 0) {
             galleryContainer.innerHTML = `<p style="font-size: 1.5em; text-align: center; margin-top: 50px;">No content yet for ${category === 'all' ? 'any category' : category}.</p>`;
             return;
         }
 
-        filesToLoad.forEach(mediaItem => {
+        currentMediaList.forEach(mediaItem => {
             const item = document.createElement('div');
             item.classList.add('gallery-item');
             // Store full path and type on the item for fullscreen view
@@ -98,10 +104,10 @@ document.addEventListener('DOMContentLoaded', () => {
             } else if (item.dataset.mediaType === 'video') {
                 const video = document.createElement('video');
                 video.src = item.dataset.fullPath;
-                video.muted = true; // Still muted for preview
-                video.loop = true; // Still loops for preview
+                video.muted = true; // Muted by default for preview
+                video.loop = true; // Loop for preview
 
-                // --- REMOVED AUTOPLAY ON HOVER ---
+                // --- AUTOPLAY ON HOVER REMOVED HERE ---
                 // item.addEventListener('mouseenter', () => video.play());
                 // item.addEventListener('mouseleave', () => { video.pause(); video.currentTime = 0; });
 
@@ -133,6 +139,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const openFullscreen = (src, type) => {
         modalContent.innerHTML = ''; // Clear previous content
 
+        // Find the index of the opened item in the currentMediaList
+        currentFullscreenIndex = currentMediaList.findIndex(item => `./media/${item.category}/${item.fileName}` === src);
+
         if (type === 'image') {
             const img = document.createElement('img');
             img.src = src;
@@ -162,7 +171,32 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         modalContent.innerHTML = ''; // Clear content
         document.body.style.overflow = ''; // Restore scrolling
+        currentFullscreenIndex = -1; // Reset index when modal is closed
     };
+
+    // Function to navigate between fullscreen items
+    const navigateFullscreen = (direction) => {
+        if (currentMediaList.length === 0) return;
+
+        let nextIndex = currentFullscreenIndex + direction;
+
+        // Loop around if at beginning/end
+        if (nextIndex < 0) {
+            nextIndex = currentMediaList.length - 1;
+        } else if (nextIndex >= currentMediaList.length) {
+            nextIndex = 0;
+        }
+
+        const nextMediaItem = currentMediaList[nextIndex];
+        const nextSrc = `./media/${nextMediaItem.category}/${nextMediaItem.fileName}`;
+        const fileExtension = nextMediaItem.fileName.split('.').pop().toLowerCase();
+        const nextType = ['png', 'jpg', 'jpeg', 'gif', 'webp'].includes(fileExtension) ? 'image' :
+                         (['mp4', 'webm', 'ogg'].includes(fileExtension) ? 'video' : 'unknown');
+
+        currentFullscreenIndex = nextIndex; // Update current index
+        openFullscreen(nextSrc, nextType); // Open the next item
+    };
+
 
     // Event listeners for close button and modal background click
     closeButton.addEventListener('click', closeFullscreen);
@@ -177,6 +211,14 @@ document.addEventListener('DOMContentLoaded', () => {
     document.addEventListener('keydown', (event) => {
         if (event.key === 'Escape' && fullscreenModal.classList.contains('active')) {
             closeFullscreen();
+        } else if (fullscreenModal.classList.contains('active') && currentFullscreenIndex !== -1) {
+            if (event.key === 'ArrowLeft') {
+                event.preventDefault(); // Prevent page scrolling
+                navigateFullscreen(-1); // Go to previous
+            } else if (event.key === 'ArrowRight') {
+                event.preventDefault(); // Prevent page scrolling
+                navigateFullscreen(1); // Go to next
+            }
         }
     });
 
@@ -190,6 +232,23 @@ document.addEventListener('DOMContentLoaded', () => {
             loadMedia(category);
         });
     });
+
+    // --- Back to Top Button Logic ---
+    // When the user scrolls down 20px from the top of the document, show the button
+    window.onscroll = function() {
+        if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
+            backToTopBtn.style.display = "block";
+        } else {
+            backToTopBtn.style.display = "none";
+        }
+    };
+
+    // When the user clicks on the button, scroll to the top of the document
+    backToTopBtn.addEventListener("click", () => {
+        document.body.scrollTop = 0; // For Safari
+        document.documentElement.scrollTop = 0; // For Chrome, Firefox, IE and Opera
+    });
+
 
     // Initial fetch of the manifest when the page loads
     fetchManifest();
