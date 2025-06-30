@@ -7,6 +7,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let mediaManifest = {}; // Will store the fetched manifest
 
+    // Function to shuffle an array (Fisher-Yates algorithm)
+    const shuffleArray = (array) => {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]]; // Swap elements
+        }
+        return array;
+    };
+
     // Function to fetch the media manifest
     const fetchManifest = async () => {
         try {
@@ -34,12 +43,13 @@ document.addEventListener('DOMContentLoaded', () => {
             // If 'all' tab is selected, collect files from all categories
             for (const cat of Object.keys(mediaManifest)) {
                 if (mediaManifest[cat]) {
-                    // Add category path to each file for full path construction
                     mediaManifest[cat].forEach(file => {
                         filesToLoad.push({ category: cat, fileName: file });
                     });
                 }
             }
+            // Shuffle the collected files for the "All" tab
+            filesToLoad = shuffleArray(filesToLoad);
         } else {
             // For specific categories, get files directly from the manifest
             if (mediaManifest[category]) {
@@ -108,6 +118,7 @@ document.addEventListener('DOMContentLoaded', () => {
             video.controls = true; // Enable controls for fullscreen
             video.autoplay = true; // Autoplay when fullscreen
             video.loop = true; // Loop in fullscreen
+            video.muted = false; // Unmute for fullscreen playback
             modalContent.appendChild(video);
         }
 
@@ -118,6 +129,12 @@ document.addEventListener('DOMContentLoaded', () => {
     // Function to close fullscreen modal
     const closeFullscreen = () => {
         fullscreenModal.classList.remove('active'); // Hide modal
+        // Stop video playback when closing modal
+        const currentMedia = modalContent.querySelector('img, video');
+        if (currentMedia && currentMedia.tagName === 'VIDEO') {
+            currentMedia.pause();
+            currentMedia.currentTime = 0;
+        }
         modalContent.innerHTML = ''; // Clear content
         document.body.style.overflow = ''; // Restore scrolling
     };
@@ -130,6 +147,14 @@ document.addEventListener('DOMContentLoaded', () => {
             closeFullscreen();
         }
     });
+
+    // Event listener for keyboard 'Escape' key to close modal
+    document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape' && fullscreenModal.classList.contains('active')) {
+            closeFullscreen();
+        }
+    });
+
 
     // Event listeners for tab buttons
     tabButtons.forEach(button => {
