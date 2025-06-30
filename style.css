@@ -1,112 +1,259 @@
 body {
-    font-family: 'Arial Black', sans-serif; /* A bold, impactful font */
-    background-color: #F5F5DC; /* Cream background */
-    color: #333; /* Dark text for contrast */
+    font-family: 'Inter', 'Helvetica Neue', Helvetica, Arial, sans-serif; /* Clean, modern sans-serif */
+    background-color: #F8F8F8; /* Very light, almost white background */
+    color: #333; /* Soft dark text for readability */
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    overflow-x: hidden; /* Prevent horizontal scrolling */
+    line-height: 1.6; /* Improved readability */
 }
 
 header {
-    background-color: #D3D3D3; /* Light gray for header, mimicking concrete */
-    padding: 20px;
+    background-color: #FFFFFF; /* Clean white header */
+    padding: 30px 20px;
     text-align: center;
-    border-bottom: 5px solid #A9A9A9; /* Darker gray border */
+    border-bottom: 1px solid #E0E0E0; /* Very subtle bottom border */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); /* Soft, subtle shadow */
 }
 
 h1 {
-    font-size: 4em; /* Large header text */
+    font-size: 3.8em; /* Large but not overwhelming */
     margin: 0;
-    text-transform: uppercase;
-    letter-spacing: 5px;
+    text-transform: uppercase; /* Still keep uppercase for impact */
+    letter-spacing: 2px; /* Reduced letter spacing */
+    color: #222; /* Slightly darker for emphasis */
+    font-weight: 700; /* Bold font for header */
 }
 
 .tabs {
     display: flex;
     justify-content: center;
-    background-color: #BEBEBE; /* Medium gray for tab background */
-    border-bottom: 3px solid #808080; /* Stronger border */
-    padding: 10px 0;
-    flex-wrap: wrap; /* Allow tabs to wrap on smaller screens */
+    background-color: #F0F0F0; /* Light gray for tab background */
+    border-bottom: 1px solid #E0E0E0;
+    padding: 15px 20px;
+    flex-wrap: wrap;
+    gap: 8px; /* Reduced gap */
 }
 
 .tab-button {
-    background-color: #C0C0C0; /* Silver for inactive tabs */
-    color: #333;
-    border: 3px solid #808080;
-    padding: 15px 30px;
-    margin: 5px 10px;
+    background-color: #FFFFFF; /* White for inactive tabs */
+    color: #555;
+    border: 1px solid #D5D5D5; /* Subtle border */
+    border-radius: 4px; /* Slightly rounded corners */
+    padding: 12px 25px;
     cursor: pointer;
-    font-size: 1.5em; /* Large button text */
-    text-transform: uppercase;
-    transition: background-color 0.3s ease, border-color 0.3s ease;
+    font-size: 1.1em; /* Moderate button text size */
+    font-weight: 500;
+    text-transform: capitalize; /* Capitalize rather than full uppercase for softer look */
+    transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease, transform 0.1s ease;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08); /* Very subtle button shadow */
 }
 
 .tab-button:hover {
-    background-color: #A9A9A9; /* Darker gray on hover */
+    background-color: #E8E8E8; /* Lighter gray on hover */
+    color: #333;
+    transform: translateY(-1px); /* Slight lift */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Slightly more pronounced shadow on hover */
 }
 
 .tab-button.active {
-    background-color: #808080; /* Dark gray for active tab */
-    color: #F5F5DC; /* Cream text for active tab */
-    border-color: #333; /* Dark border for active tab */
+    background-color: #6A8EAE; /* A soft blue/gray for active tab */
+    color: #FFFFFF; /* White text for active tab */
+    border-color: #6A8EAE;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15); /* Slightly darker shadow for active */
+    transform: translateY(0); /* Reset transform */
 }
 
 .gallery-container {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); /* Responsive grid */
-    gap: 20px;
-    padding: 40px;
+    /* Cards will be approx. 350px wide, with generous spacing */
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 25px; /* Ample space between cards */
+    padding: 40px; /* Generous padding around the grid */
+    justify-content: center; /* Center items in the grid */
 }
 
 .gallery-item {
-    background-color: #D3D3D3; /* Light gray for item background */
-    border: 3px solid #808080; /* Strong border for items */
-    padding: 15px;
-    box-shadow: 5px 5px 0px #A9A9A9; /* Simple shadow */
+    background-color: #FFFFFF; /* White background for items */
+    border: 1px solid #E5E5E5; /* Very subtle border for definition */
+    border-radius: 6px; /* Slightly rounded corners for cards */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08); /* Soft, diffused shadow */
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 200px; /* Minimum height for cards */
+    aspect-ratio: 16/9; /* Maintain aspect ratio */
+}
+
+.gallery-item:hover {
+    transform: translateY(-3px); /* Gentle lift on hover */
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15); /* Slightly more pronounced shadow on hover */
 }
 
 .gallery-item img,
 .gallery-item video {
     width: 100%;
-    height: auto;
+    height: 100%;
+    object-fit: cover; /* Cover the item area, cropping if necessary */
     display: block;
-    border: 1px solid #C0C0C0; /* Subtle inner border */
+    border-radius: 6px; /* Match card border radius */
 }
 
-.gallery-item p {
-    font-size: 1.2em; /* Larger caption text */
-    margin-top: 10px;
-    text-align: center;
-    color: #555;
+/* --- Fullscreen Modal Styles --- */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.85); /* Slightly softer dark overlay */
+    justify-content: center;
+    align-items: center;
+    backdrop-filter: blur(5px); /* Gentle blur */
+    -webkit-backdrop-filter: blur(5px); /* Safari compatibility */
+}
+
+.modal.active {
+    display: flex;
+}
+
+.modal-content {
+    margin: auto;
+    display: block;
+    max-width: 90%;
+    max-height: 90vh;
+    border: 3px solid #FFFFFF; /* Clean white border */
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.4); /* Soft white glow */
+    border-radius: 8px; /* Rounded corners for modal content */
+    overflow: hidden; /* Ensure content respects border radius */
+}
+
+.modal-content img,
+.modal-content video {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+    border-radius: 6px; /* Match modal content border radius */
+}
+
+.close-button {
+    position: absolute;
+    top: 25px;
+    right: 30px;
+    color: #FFFFFF; /* White close button */
+    font-size: 45px; /* Large but not excessively huge */
+    font-weight: 300; /* Lighter weight for simplicity */
+    transition: 0.3s;
+    cursor: pointer;
+    background-color: rgba(0, 0, 0, 0.3); /* Semi-transparent background for visibility */
+    border-radius: 50%; /* Circular button */
+    width: 50px;
+    height: 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    line-height: 1; /* Center X vertically */
+}
+
+.close-button:hover,
+.close-button:focus {
+    color: #E0E0E0; /* Slightly darker white on hover */
+    background-color: rgba(0, 0, 0, 0.5);
+    transform: rotate(90deg); /* Simple rotate effect */
 }
 
 /* Basic responsiveness */
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
     h1 {
         font-size: 3em;
+        letter-spacing: 1.5px;
     }
     .tab-button {
-        font-size: 1.2em;
+        font-size: 1em;
         padding: 10px 20px;
     }
     .gallery-container {
-        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 20px;
+        padding: 30px;
+    }
+    .gallery-item {
+        min-height: 180px;
+    }
+    .close-button {
+        font-size: 40px;
+        top: 20px;
+        right: 25px;
+        width: 45px;
+        height: 45px;
+    }
+}
+
+@media (max-width: 768px) {
+    header {
         padding: 20px;
+    }
+    h1 {
+        font-size: 2.5em;
+        letter-spacing: 1px;
+    }
+    .tabs {
+        padding: 10px;
+        gap: 6px;
+    }
+    .tab-button {
+        font-size: 0.9em;
+        padding: 8px 15px;
+    }
+    .gallery-container {
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 15px;
+        padding: 20px;
+    }
+    .gallery-item {
+        min-height: 160px;
+    }
+    .close-button {
+        font-size: 35px;
+        top: 15px;
+        right: 20px;
+        width: 40px;
+        height: 40px;
     }
 }
 
 @media (max-width: 480px) {
     h1 {
         font-size: 2em;
+        letter-spacing: 0.5px;
     }
     .tab-button {
-        font-size: 1em;
-        padding: 8px 15px;
-        margin: 3px 5px;
+        font-size: 0.8em;
+        padding: 6px 12px;
     }
     .gallery-container {
-        padding: 10px;
-        gap: 15px;
+        grid-template-columns: 1fr; /* Single column on very small screens */
+        gap: 10px;
+        padding: 15px;
+    }
+    .gallery-item {
+        min-height: 180px;
+        max-width: 95%;
+        margin: 0 auto;
+    }
+    .close-button {
+        font-size: 30px;
+        top: 10px;
+        right: 15px;
+        width: 35px;
+        height: 35px;
     }
 }

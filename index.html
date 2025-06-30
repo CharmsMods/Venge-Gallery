@@ -12,17 +12,27 @@
     </header>
 
     <nav class="tabs">
-        <button class="tab-button active" data-category="wins">Wins</button>
-        <button class="tab-button" data-category="losses">Losses</button>
+        <button class="tab-button active" data-category="all">All</button>
+        <button class="tab-button" data-category="wins">Wins</button>
         <button class="tab-button" data-category="funny">Funny</button>
-        <button class="tab-button" data-category="toxic">Toxic</button>
-        <button class="tab-button" data-category="hackers">Hackers</button>
-        <button class="tab-button" data-category="glitch_abuser">Glitch Abusers</button>
         <button class="tab-button" data-category="history">History</button>
+        <button class="tab-button" data-category="glitch_abuser">Glitch Abusers</button>
+        <button class="tab-button" data-category="hackers">Hackers</button>
+        <button class="tab-button" data-category="losses">Losses</button>
+        <button class="tab-button" data-category="toxic">Toxic</button>
     </nav>
 
     <main class="gallery-container">
-        </main>
+        <!-- Media will be loaded here by JavaScript -->
+    </main>
+
+    <!-- Fullscreen Modal Container -->
+    <div id="fullscreen-modal" class="modal">
+        <span class="close-button">&times;</span>
+        <div class="modal-content">
+            <!-- Content (image/video) will be injected here -->
+        </div>
+    </div>
 
     <script src="script.js"></script>
 </body>
